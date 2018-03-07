@@ -1,107 +1,157 @@
 import React from 'react';
 import {
+  FlatList,
   Image,
   Platform,
-  ScrollView,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
+  TouchableOpacity,
+  ActivityIndicator,
 } from 'react-native';
-import { WebBrowser } from 'expo';
-
-import { MonoText } from '../components/StyledText';
+import * as Progress from 'react-native-progress';
+import Parse from "parse/react-native";
 
 export default class HomeScreen extends React.Component {
   static navigationOptions = {
     header: null,
+    title: 'funding',
   };
 
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      isLoading: true,
+    };
+  }
+
+  componentDidMount() {
+    this.fetchData();
+  }
+
+  fetchData() {
+    let project = Parse.Object.extend("Project");
+    let query = new Parse.Query(project);
+    query.find().then((data) => {
+        this.setState({
+          isLoading: false,
+          dataSource: data,
+        });
+      });
+  }
+
   render() {
+
+    if(this.state.isLoading) {
+      return (
+        <View style={{flex:1, padding:20}}>
+          <ActivityIndicator/>
+        </View>
+      )
+    }
+
     return (
       <View style={styles.container}>
-        <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-          <View style={styles.welcomeContainer}>
-            <Image
-              source={
-                __DEV__
-                  ? require('../assets/images/robot-dev.png')
-                  : require('../assets/images/robot-prod.png')
-              }
-              style={styles.welcomeImage}
-            />
-          </View>
-
-          <View style={styles.getStartedContainer}>
-            {this._maybeRenderDevelopmentModeWarning()}
-
-            <Text style={styles.getStartedText}>Get started by opening</Text>
-
-            <View style={[styles.codeHighlightContainer, styles.homeScreenFilename]}>
-              <MonoText style={styles.codeHighlightText}>screens/HomeScreen.js</MonoText>
-            </View>
-
-            <Text style={styles.getStartedText}>
-              Change this text and your app will automatically reload.
-            </Text>
-          </View>
-
-          <View style={styles.helpContainer}>
-            <TouchableOpacity onPress={this._handleHelpPress} style={styles.helpLink}>
-              <Text style={styles.helpLinkText}>Help, it didn’t automatically reload!</Text>
-            </TouchableOpacity>
-          </View>
-        </ScrollView>
-
-        <View style={styles.tabBarInfoContainer}>
-          <Text style={styles.tabBarInfoText}>This is a tab bar. You can edit it in:</Text>
-
-          <View style={[styles.codeHighlightContainer, styles.navigationFilename]}>
-            <MonoText style={styles.codeHighlightText}>navigation/MainTabNavigator.js</MonoText>
-          </View>
-        </View>
+        <FlatList
+          data={this.state.dataSource}
+          ItemSeparatorComponent={this._separator}
+          extraData={this.state}
+          keyExtractor = {this._keyExtractor}
+          renderItem={this._renderItem}
+        />
       </View>
     );
   }
 
-  _maybeRenderDevelopmentModeWarning() {
-    if (__DEV__) {
-      const learnMoreButton = (
-        <Text onPress={this._handleLearnMorePress} style={styles.helpLinkText}>
-          Learn more
-        </Text>
-      );
+  _renderItem = ({item}) => (
+    <ProjectItem
+      item={item}
+      {...this.props}
+    />
+  );
 
-      return (
-        <Text style={styles.developmentModeText}>
-          Development mode is enabled, your app will be slower but you can use useful development
-          tools. {learnMoreButton}
-        </Text>
-      );
-    } else {
-      return (
-        <Text style={styles.developmentModeText}>
-          You are not in development mode, your app will run at full speed.
-        </Text>
-      );
-    }
+  _keyExtractor = (item, index) => item.id;
+
+  _separator = () => {
+    return <View style={{height:0.3,backgroundColor:'grey'}}/>;
+  };
+}
+
+class ProjectItem extends React.PureComponent {
+  render() {
+    const item = this.props.item;
+    let funded = parseFloat(item.get('funded'));
+    let aim = parseFloat(item.get('aim'));
+    let progress = funded/aim;
+    let progressPercent = progress * 100;
+    return (<TouchableOpacity style={styles.itemContainer}
+                              activeOpacity={0.8}
+                              onPress={() => this.props.navigation.navigate('Details', {item})}>
+      <Image style={styles.imageContainer}
+             source={{uri:item.get('image_uri')}}/>
+      <Text style={styles.titleContainer}> {item.get('title')}</Text>
+      <Text style={styles.founderContainer}> {'by ' + item.get('founder')}</Text>
+      <View style={styles.progressContainer}>
+        <Progress.Bar progress={progress} width={null} height={2}/>
+      </View>
+      <View style={styles.descriptionContainer}>
+        <Text style={styles.descriptionText}>{progressPercent + '%\nfunded'}</Text>
+        <Text style={styles.descriptionText}>{item.get('backers') + '\nbackers'}</Text>
+        <Text style={styles.descriptionText}>{'99 \ndays to go'}</Text>
+      </View>
+    </TouchableOpacity>)
   }
-
-  _handleLearnMorePress = () => {
-    WebBrowser.openBrowserAsync('https://docs.expo.io/versions/latest/guides/development-mode');
-  };
-
-  _handleHelpPress = () => {
-    WebBrowser.openBrowserAsync(
-      'https://docs.expo.io/versions/latest/guides/up-and-running.html#can-t-see-your-changes'
-    );
-  };
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
+    paddingTop: 22,
+  },
+  statusContainer: {
+    backgroundColor: '#000'
+  },
+  itemContainer: {
+    flex: 1,
+    backgroundColor: '#fff',
+    paddingTop: 22,
+    paddingBottom: 22,
+  },
+  imageContainer: {
+    backgroundColor: '#fff',
+    height: 280,
+    paddingTop: 22,
+    resizeMode: Image.resizeMode.stretch,
+  },
+  titleContainer: {
+    flex: 1,
+    backgroundColor: '#fff',
+    fontWeight: 'bold',
+    fontSize: 22,
+    paddingBottom: 8,
+  },
+  founderContainer: {
+    flex: 1,
+    backgroundColor: '#fff',
+    fontSize: 14,
+    paddingLeft: 4,
+  },
+  progressContainer: {
+    flex: 1,
+    paddingTop: 10,
+    paddingLeft: 5,
+    paddingRight: 10,
+  },
+  descriptionContainer: {
+    flexDirection: 'row',
+    paddingTop: 5,
+    paddingLeft: 8,
+  },
+  descriptionText: {
+    flex:1,
+    fontSize:10,
   },
   developmentModeText: {
     marginBottom: 20,

@@ -4,12 +4,37 @@ import { StackNavigator } from 'react-navigation';
 
 import MainTabNavigator from './MainTabNavigator';
 import registerForPushNotificationsAsync from '../api/registerForPushNotificationsAsync';
+import DetailsScreen from "../screens/DetailsScreen";
+import QRCodeScreen from "../screens/QRCodeScreen";
+import QRScannerScreen from "../screens/QRScannerScreen";
+import SignInScreen from "../screens/SignInScreen";
+import SignUpScreen from "../screens/SignUpScreen";
+import PublishScreen from "../screens/PublishScreen";
+import ScannerScreen from "../screens/ScannerScreen";
 
 const RootStackNavigator = StackNavigator(
   {
     Main: {
       screen: MainTabNavigator,
     },
+    Details : {
+      screen: DetailsScreen,
+    },
+    QRCode : {
+      screen: QRCodeScreen,
+    },
+    QRScanner : {
+      screen: ScannerScreen,
+    },
+    SignIn : {
+      screen: SignInScreen,
+    },
+    SignUp : {
+      screen: SignUpScreen,
+    },
+    Publish : {
+      screen: PublishScreen,
+    }
   },
   {
     navigationOptions: () => ({
@@ -17,7 +42,7 @@ const RootStackNavigator = StackNavigator(
         fontWeight: 'normal',
       },
     }),
-  }
+  },
 );
 
 export default class RootNavigator extends React.Component {

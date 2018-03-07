@@ -1,0 +1,25 @@
+{
+  "main": "node_modules/expo/AppEntry.js",
+  "private": true,
+  "scripts": {
+    "test": "node ./node_modules/jest/bin/jest.js --watchAll"
+  },
+  "jest": {
+    "preset": "jest-expo"
+  },
+  "dependencies": {
+    "@expo/samples": "2.1.1",
+    "expo": "^25.0.0",
+    "parse": "^1.11.0",
+    "react": "16.2.0",
+    "react-native": "https://github.com/expo/react-native/archive/sdk-25.0.0.tar.gz",
+    "react-native-progress": "^3.4.0",
+    "react-native-qrcode": "^0.2.6",
+    "react-navigation": "^1.0.0-beta.27",
+    "react-redux": "^5.0.7",
+    "@expo/vector-icons": "latest"
+  },
+  "devDependencies": {
+    "jest-expo": "^25.0.0"
+  }
+}
