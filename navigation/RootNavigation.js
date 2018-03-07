@@ -4,12 +4,24 @@ import { StackNavigator } from 'react-navigation';
 
 import MainTabNavigator from './MainTabNavigator';
 import registerForPushNotificationsAsync from '../api/registerForPushNotificationsAsync';
+import DetailsScreen from "../screens/DetailsScreen";
+import QRCodeScreen from "../screens/QRCodeScreen";
+import ScannerScreen from "../screens/ScannerScreen";
 
 const RootStackNavigator = StackNavigator(
   {
     Main: {
       screen: MainTabNavigator,
     },
+    Details : {
+      screen: DetailsScreen,
+    },
+    QRCode : {
+      screen: QRCodeScreen,
+    },
+    Scanner : {
+      screen: ScannerScreen,
+    }
   },
   {
     navigationOptions: () => ({

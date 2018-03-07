@@ -1,0 +1,16 @@
+{
+  "project": [
+    { "key": 1,
+      "founder": "Asma Wahab",
+      "title": "Alif Baa Taa:An Arabic Alphabet Board Book for Kids!",
+      "progress": 0.3},
+    { "key": 2,
+      "founder": "Shigeru Fukuoka",
+      "title": "MARUHI Cup and Saucer",
+      "progress": 0.9},
+    { "key": 3,
+      "founder": "Microcosm Publishing",
+      "title": "The Stoner Babes Coloring Book",
+      "progress": 0.5}
+  ]
+}
